@@ -1490,4 +1490,9 @@ endforeach()
 # to have correct paths to libraries depending on the configuration
 OCCT_UPDATE_TARGET_FILE ()
 
+# AHP OcctRestServer
+message (STATUS "Info: Adding subdirectory tools/OcctRestServer")
+add_subdirectory("tools/OcctRestServer")
+target_include_directories(OcctRestServer PRIVATE .)
+
 message (STATUS "Info: \(${CURRENT_TIME}\) OCCT configuration files prepared")
