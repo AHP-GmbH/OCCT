@@ -1,0 +1,3 @@
+﻿     Bibliothek "C:/Development/Projects/Third-Party/OCCT/win64/vc14/libd/OcctRestServer.lib" und Objekt "C:/Development/Projects/Third-Party/OCCT/win64/vc14/libd/OcctRestServer.exp" werden erstellt.
+SessionManager.obj : error LNK2019: Verweis auf nicht aufgelöstes externes Symbol ""public: __cdecl IGESControl_Reader::IGESControl_Reader(void)" (??0IGESControl_Reader@@QEAA@XZ)" in Funktion ""private: static void __cdecl SessionManager::loadTask(class std::shared_ptr<struct ManagedSession>)" (?loadTask@SessionManager@@CAXV?$shared_ptr@UManagedSession@@@std@@@Z)".
+C:\Development\Projects\Third-Party\OCCT\win64\vc14\bind\OcctRestServer.exe : fatal error LNK1120: 1 nicht aufgelöste Externe

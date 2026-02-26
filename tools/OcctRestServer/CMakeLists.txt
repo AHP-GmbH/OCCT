@@ -4,6 +4,7 @@ add_executable(OcctRestServer
         main.cxx
         RestServer.cxx
         Endpoints.cxx
+        SessionManager.cpp
 )
 target_include_directories(OcctRestServer PRIVATE
         ${CMAKE_SOURCE_DIR}/src/FoundationClasses/TKernel/Standard
@@ -19,5 +20,6 @@ target_link_libraries(OcctRestServer PRIVATE
         TKBRep        # <--- für BRepBndLib, TopoDS_Shape
         TKXSBase      # <--- für XSControl_Reader
         TKDESTEP      # <--- für STEPControl_Reader
+        TKDEIGES
 )
 set_property(TARGET OcctRestServer PROPERTY EXCLUDE_FROM_ALL OFF)
