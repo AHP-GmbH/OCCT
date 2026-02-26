@@ -1,0 +1,5 @@
+POST http://localhost:8080/bbox
+Content-Type: application/json
+Accept: application/json
+
+blubb

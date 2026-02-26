@@ -1,9 +1,6 @@
 #include "RestServer.hxx"
 #include "Endpoints.hxx"
 
-#include <httplib.h>
-#include <Standard_Stream.hxx>
-
 Standard_Integer StartOcctRestServer(Standard_Integer thePort)
 {
     httplib::Server aServer;

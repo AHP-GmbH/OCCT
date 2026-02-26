@@ -4,9 +4,6 @@
 #include <BRepBndLib.hxx>
 #include <Bnd_Box.hxx>
 
-#include <nlohmann/json.hpp>
-#include <httplib.h>
-
 using json = nlohmann::json;
 
 void RegisterBBoxEndpoint(httplib::Server& theServer)
