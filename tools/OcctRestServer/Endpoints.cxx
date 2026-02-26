@@ -37,10 +37,23 @@ void RegisterBBoxEndpoint(httplib::Server& theServer)
         aBox.Get(xmin, ymin, zmin, xmax, ymax, zmax);
 
         json j = {
+            {"file", aPath},
             {"xmin", xmin}, {"ymin", ymin}, {"zmin", zmin},
             {"xmax", xmax}, {"ymax", ymax}, {"zmax", zmax}
         };
 
         res.set_content(j.dump(), "application/json");
+    });
+    theServer.Get("/quit", [](const httplib::Request& req, httplib::Response& res) {
+        std::cout << "Quit Endpunkt aufgerufen, beende Server.";
+        json j = {
+            {"message", "QUIT"}
+        };
+        res.status = 200;
+        res.set_content(j.dump(), "application/json");
+        std::thread([]{
+            std::this_thread::sleep_for(std::chrono::seconds(2));
+            std::exit(0);
+        }).detach();
     });
 }

@@ -1,5 +1,9 @@
+### bbox
 POST http://localhost:8080/bbox
 Content-Type: application/json
 Accept: application/json
 
-blubb
+V:/CAD-Bilder/3d/Sammlungen/STEP/TK/Schaltschrank VF1.step
+
+### Quit
+GET http://localhost:8080/quit
