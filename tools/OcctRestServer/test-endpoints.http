@@ -1,9 +1,12 @@
 ### bbox
-POST http://localhost:8080/bbox
-Content-Type: application/json
-Accept: application/json
-
-V:/CAD-Bilder/3d/Sammlungen/STEP/TK/Schaltschrank VF1.step
+GET http://localhost:8080/bbox?id=a8242da1-49ba-49aa-a6dd-89e4746de4a0
 
 ### Quit
 GET http://localhost:8080/quit
+
+### Start Session
+#GET http://localhost:8080/start?file=V:/CAD-Bilder/3d/Sammlungen/STEP/TK/Schaltschrank VF1.step
+GET http://localhost:8080/start?file=V:/CAD-Bilder/3d/Sammlungen/STEP/TK/pool-billard.step
+
+### Info Session
+GET http://localhost:8080/info?id=4aad776f-154e-4226-90d8-e1dcece82740

@@ -64,6 +64,16 @@ UUID UUID::fromString(const std::string& str)
 
 std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& filename)
 {
+  // 1. Suche: Existiert bereits eine Session mit diesem Dateinamen?
+  for (auto const& [id, session] : sessions)
+  {
+    if (session->filename == filename)
+    {
+      // Gefunden! Wir geben die existierende Session zurück.
+      return session;
+    }
+  }
+
   auto id      = UUID::generate();
   auto session = std::make_shared<ManagedSession>(id, filename);
 
@@ -73,7 +83,8 @@ std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& 
   }
 
   // Asynchroner Start des OCCT Ladevorgangs
-  std::async(std::launch::async, [session]() { loadTask(session); });
+  session->loadingTask = std::async(std::launch::async, [session]() { loadTask(session); });
+  std::cout << "Loading file " << filename << " for session " << session->id.toString;
 
   return session;
 }

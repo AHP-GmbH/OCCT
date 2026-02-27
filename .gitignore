@@ -69,6 +69,16 @@ win64
 /adm/lin
 /adm/mac
 /adm/make
+*.vcproj
+*.vcxproj
+*.sln
+cmake_install.cmake
+generate.stamp
+generate.stamp.depend
+*.obj
+*.tlog
+*.dir
+*.vcxproj.*
 *.vcproj*user
 *.vcxproj*user
 *.csproj*user

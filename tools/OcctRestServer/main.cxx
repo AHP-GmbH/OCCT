@@ -1,4 +1,5 @@
 #include "RestServer.hxx"
+#include "Logger.hxx"
 
 int main(int argc, char** argv)
 {
@@ -7,6 +8,6 @@ int main(int argc, char** argv)
     if (argc > 1) {
         port = std::atoi(argv[1]);
     }
-
+    Logger::instance().setLevel(LogLevel::DEBUG);
     return StartOcctRestServer(port);
 }

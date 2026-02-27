@@ -8,11 +8,11 @@ Standard_Integer StartOcctRestServer(Standard_Integer thePort)
   SessionManager  manager;
 
     // Endpoints registrieren
-    RegisterBBoxEndpoint(svr);
+    RegisterBBoxEndpoint(svr, manager);
     // Weitere Endpoints hier hinzufügen:
     // RegisterMeshEndpoint(aServer);
     // RegisterStructureEndpoint(aServer);
-    RegisterQuitEndpoint(svr);
+    RegisterQuitEndpoint(svr, manager);
     RegisterSessionManagerEndpoints(svr, manager);
 
     std::cout << "OCCT REST server listening on port " << thePort << std::endl;

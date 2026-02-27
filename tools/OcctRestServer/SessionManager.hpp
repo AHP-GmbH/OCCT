@@ -19,6 +19,13 @@ struct UUID
 
   // Wichtig für std::map: Der Vergleichsoperator
   bool operator<(const UUID& other) const { return data < other.data; }
+
+  // Der "Stream-Operator" für den Logger und std::cout
+  friend std::ostream& operator<<(std::ostream& os, const UUID& uuid)
+  {
+    os << UUID::toString(uuid);
+    return os;
+  }
 };
 
 // --- Zustände der Session ---
@@ -29,6 +36,26 @@ enum class SessionStatus
   Error
 };
 
+inline std::ostream& operator<<(std::ostream& os, const SessionStatus& status)
+{
+  switch (status)
+  {
+    case SessionStatus::Loading:
+      os << "Loading";
+      break;
+    case SessionStatus::Ready:
+      os << "Ready";
+      break;
+    case SessionStatus::Error:
+      os << "Error";
+      break;
+    default:
+      os << "Unknown";
+      break;
+  }
+  return os;
+}
+
 // --- ManagedSession: Der Container für Daten & Status ---
 struct ManagedSession
 {
@@ -38,6 +65,7 @@ struct ManagedSession
   SessionStatus      status;
   std::string        errorMessage;
   mutable std::mutex sessionMtx; // Schützt Daten innerhalb der Session
+  std::future<void>  loadingTask; // Hier parken wir den Task
 
   ManagedSession(const UUID& uuid, const std::string& fname)
       : id(uuid),

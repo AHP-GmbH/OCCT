@@ -5,6 +5,7 @@ add_executable(OcctRestServer
         RestServer.cxx
         Endpoints.cxx
         SessionManager.cpp
+        Logger.cxx
 )
 target_include_directories(OcctRestServer PRIVATE
         ${CMAKE_SOURCE_DIR}/src/FoundationClasses/TKernel/Standard
