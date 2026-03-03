@@ -20,3 +20,5 @@ https://raw.githubusercontent.com/yhirose/cpp-httplib/refs/heads/master/httplib.
 ## json.h
 https://raw.githubusercontent.com/nlohmann/json/refs/heads/develop/single_include/nlohmann/json.hpp
 
+## RapidJSon
+https://www.google.com/search?q=https://github.com/Tencent/rapidjson/archive/refs/heads/master.zip

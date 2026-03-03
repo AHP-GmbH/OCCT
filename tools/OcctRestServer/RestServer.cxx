@@ -4,7 +4,7 @@
 
 #define HOST_ADDRESS "127.0.0.1"
 
-Standard_Integer StartOcctRestServer(Standard_Integer thePort)
+int StartOcctRestServer(int thePort)
 {
     httplib::Server svr;
     SessionManager  manager;

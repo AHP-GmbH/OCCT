@@ -1,5 +1,6 @@
 #include "Endpoints.hxx"
 #include "Logger.hxx"
+#include "Converter.hxx"
 #include <STEPControl_Reader.hxx>
 #include <BRepBndLib.hxx>
 #include <Bnd_Box.hxx>
@@ -145,6 +146,32 @@ void RegisterSessionManagerEndpoints(httplib::Server& svr, SessionManager& manag
     else
     {
       send_json(res, error_json("Session nicht gefunden"),404);
+    }
+  });
+
+  svr.Get("/convert", [&](const httplib::Request& req, httplib::Response& res) {
+    if (!req.has_param("id"))
+    {
+      send_json(res, error_json("Parameter 'id' fehlt"), 400);
+      return;
+    }
+
+    auto id      = UUID::fromString(req.get_param_value("id"));
+    auto session = manager.getSession(id);
+
+    if (session)
+    {
+      std::lock_guard<std::mutex> lock(session->sessionMtx);
+      json                        responseData = session_json(session);
+      if (session->status == SessionStatus::Error)
+      {
+        responseData["error_details"] = session->errorMessage;
+      }
+      send_json(res, {{"success", true}, {"data", responseData}});
+    }
+    else
+    {
+      send_json(res, error_json("Session nicht gefunden"), 404);
     }
   });
 }
