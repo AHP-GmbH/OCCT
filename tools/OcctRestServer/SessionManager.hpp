@@ -63,6 +63,7 @@ struct ManagedSession
   std::string        filename;
   TopoDS_Shape       shape;
   SessionStatus      status;
+  int                usageCount;
   std::string        errorMessage;
   mutable std::mutex sessionMtx; // Schützt Daten innerhalb der Session
   std::future<void>  loadingTask; // Hier parken wir den Task
@@ -94,7 +95,7 @@ private:
 public:
   std::shared_ptr<ManagedSession> startSession(const std::string& filename);
   std::shared_ptr<ManagedSession> getSession(const UUID& id) const;
-  bool                            stopSession(const UUID& id);
+  bool                            stopSession(const UUID& id, const bool force);
 
 private:
   // Der statische Task für OCCT, um "this"-Abhängigkeiten im Thread zu minimieren

@@ -19,7 +19,8 @@ json session_json(std::shared_ptr<ManagedSession> session)
     return json::object(); // Sicherheitshalber
   json responseData = {{"uuid", UUID::toString(session->id)},
                        {"filename", session->filename},
-                       {"status", static_cast<int>(session->status)}};
+                       {"status", static_cast<int>(session->status)},
+                       {"usageCount", session->usageCount}};
 
   if (session->status == SessionStatus::Error)
   {
@@ -90,7 +91,7 @@ void RegisterQuitEndpoint(httplib::Server& svr, SessionManager& manager) {
 void RegisterSessionManagerEndpoints(httplib::Server& svr, SessionManager& manager) {
   svr.Get("/start", [&](const httplib::Request& req, httplib::Response& res) {
     if (!req.has_param("file")) {
-        send_json(res, {{"success", false}, {"error", "Parameter 'file' fehlt"}}, 400);
+        send_json(res, error_json("Parameter 'file' fehlt"), 400);
         return;
     }
     std::string filename = req.get_param_value("file");
@@ -103,13 +104,30 @@ void RegisterSessionManagerEndpoints(httplib::Server& svr, SessionManager& manag
     }
     else
     {
-      send_json(res, {{"success", false}, {"error", "Konnte Session nicht starten."}}, 400);
+      send_json(res, error_json("Konnte Session nicht starten."), 400);
     }
+  });
+
+  svr.Get("/stop", [&](const httplib::Request& req, httplib::Response& res) {
+    if (!req.has_param("id"))
+    {
+      send_json(res, error_json("Parameter 'id' fehlt"), 400);
+      return;
+    }
+    bool force = false;
+    if (req.has_param("force"))
+    {
+      std::string fval = req.get_param_value("force");
+      force            = "true" == fval;
+    }
+    auto id      = UUID::fromString(req.get_param_value("id"));
+    auto stopped = manager.stopSession(id,force);
+    send_json(res, {{"success", stopped}});
   });
 
   svr.Get("/info", [&](const httplib::Request& req, httplib::Response& res) {
     if (!req.has_param("id")) {
-        send_json(res, {{"success", false}, {"error", "ID fehlt"}}, 400);
+        send_json(res, error_json("Parameter 'id' fehlt"), 400);
         return;
     }
     auto id      = UUID::fromString(req.get_param_value("id"));
@@ -118,21 +136,15 @@ void RegisterSessionManagerEndpoints(httplib::Server& svr, SessionManager& manag
     if (session)
     {
       std::lock_guard<std::mutex> lock(session->sessionMtx);
-      json responseData = {
-            {"uuid", UUID::toString(session->id)},
-            {"filename", session->filename},
-            {"status", static_cast<int>(session->status)}
-      };
-
-        if (session->status == SessionStatus::Error) {
-            responseData["error_details"] = session->errorMessage;
-        }
-
-        send_json(res, {{"success", true}, {"data", responseData}});
+      json responseData = session_json(session);
+      if (session->status == SessionStatus::Error) {
+        responseData["error_details"] = session->errorMessage;
+      }
+      send_json(res, {{"success", true}, {"data", responseData}});
     }
     else
     {
-      send_json(res, {{"success", false}, {"error", "Session nicht gefunden"}},404);
+      send_json(res, error_json("Session nicht gefunden"),404);
     }
   });
 }

@@ -10,8 +10,9 @@
 #include <IGESControl_Reader.hxx>
 #include <Interface_Static.hxx>
 
+// ==========================================================
 // --- UUID IMPLEMENTIERUNG ---
-
+// ==========================================================
 UUID UUID::generate()
 {
   UUID                            uuid;
@@ -60,8 +61,9 @@ UUID UUID::fromString(const std::string& str)
   return uuid;
 }
 
+// ==========================================================
 // --- SESSION MANAGER IMPLEMENTIERUNG ---
-
+// ==========================================================
 std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& filename)
 {
   // 1. Suche: Existiert bereits eine Session mit diesem Dateinamen?
@@ -70,6 +72,8 @@ std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& 
     if (session->filename == filename)
     {
       // Gefunden! Wir geben die existierende Session zurück.
+      std::lock_guard<std::mutex> lock(session->sessionMtx);
+      session->usageCount++;
       return session;
     }
   }
@@ -79,6 +83,7 @@ std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& 
 
   {
     std::lock_guard<std::mutex> lock(mtx);
+    session->usageCount = 1;
     sessions[id] = session;
   }
 
@@ -89,6 +94,9 @@ std::shared_ptr<ManagedSession> SessionManager::startSession(const std::string& 
   return session;
 }
 
+// ==========================================================
+// Session suchen anhand id. Wenn nicht gefunden, nullptr.
+// ==========================================================
 std::shared_ptr<ManagedSession> SessionManager::getSession(const UUID& id) const
 {
   std::lock_guard<std::mutex> lock(mtx);
@@ -96,14 +104,33 @@ std::shared_ptr<ManagedSession> SessionManager::getSession(const UUID& id) const
   return (it != sessions.end()) ? it->second : nullptr;
 }
 
-bool SessionManager::stopSession(const UUID& id)
+// ==========================================================
+// Session stoppen. UsageCount dekremtentieren, wenn 0 dann
+// Session entfernen.
+// ==========================================================
+bool SessionManager::stopSession(const UUID& id, const bool force)
 {
   std::lock_guard<std::mutex> lock(mtx);
-  return sessions.erase(id) > 0;
+  auto session = getSession(id);
+  if (session != nullptr)
+  {
+    std::lock_guard(session->sessionMtx);
+    session->usageCount--;
+    if (force || session->usageCount <= 0)
+    {
+      return sessions.erase(id) > 0;
+    }
+    else
+    {
+      return true;
+    }
+  }
+  return false;
 }
 
-// --- DER ASYNCHRONOE OCCT TASK ---
-
+// ==========================================================
+// Asynchrones Laden der Datei, Aktualisierung Status.
+// ==========================================================
 void SessionManager::loadTask(std::shared_ptr<ManagedSession> session)
 {
   try
